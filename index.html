@@ -83,9 +83,16 @@
             padding: 3rem 1rem;
         }
 
+        .title-container {
+            height: 4.5rem; /* Fixed height to prevent content shifting */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
         h1 {
             font-size: 3.5rem;
-            margin-bottom: 1rem;
             background: linear-gradient(90deg, var(--accent-color), #ff00aa);
             -webkit-background-clip: text;
             background-clip: text;
@@ -474,7 +481,11 @@
 
     <div class="container">
         <header>
-            <h1 id="typing-title"></h1><span class="cursor"></span>
+            <div class="title-container">
+                <a id="title-link" href="#" target="_blank">
+                    <h1 id="typing-title"></h1>
+                </a><span class="cursor"></span>
+            </div>
             <p class="subtitle">Exploring the fusion of technology, art, and mathematics through creative coding, interactive projects, and dynamic visualizations.</p>
         </header>
 
@@ -700,11 +711,25 @@
         // Console typing animation
         (function() {
             const titleElement = document.getElementById('typing-title');
+            const titleLink = document.getElementById('title-link');
             const titles = ["drbaph.is-a.dev", "Saganaki22.github.io"];
+            const urls = {
+                "drbaph.is-a.dev": "https://drbaph.dev",
+                "Saganaki22.github.io": "https://github.com/Saganaki22"
+            };
             let currentTitleIndex = 0;
             let currentCharIndex = 0;
             let isDeleting = false;
             let typingSpeed = 150; // Base typing speed in ms
+            
+            function updateTitleLink(currentTitle) {
+                // Update the href of the link based on the current title text
+                if (currentTitle === titles[0]) {
+                    titleLink.href = urls[titles[0]];
+                } else if (currentTitle === titles[1]) {
+                    titleLink.href = urls[titles[1]];
+                }
+            }
             
             function typeText() {
                 const currentTitle = titles[currentTitleIndex];
@@ -717,6 +742,11 @@
                     // If typing, add a character
                     titleElement.textContent = currentTitle.substring(0, currentCharIndex + 1);
                     currentCharIndex++;
+                }
+                
+                // Update link when full title is shown
+                if (currentCharIndex === currentTitle.length) {
+                    updateTitleLink(currentTitle);
                 }
                 
                 // Determine typing speed - faster when deleting
@@ -738,6 +768,10 @@
                 
                 setTimeout(typeText, speed);
             }
+            
+            // Style the link to inherit the title's appearance
+            titleLink.style.textDecoration = "none";
+            titleLink.style.color = "inherit";
             
             // Start the typing animation
             typeText();
@@ -927,8 +961,8 @@
             let gameState = {
                 ballX: window.innerWidth / 2,
                 ballY: window.innerHeight / 2,
-                ballSpeedX: 6.25, // Increased from 5 to 6.25 (25% faster)
-                ballSpeedY: 2.5, // Increased from 2 to 2.5 (25% faster)
+                ballSpeedX: 9.375, // Increased from 7.8125 to 9.375 (20% faster)
+                ballSpeedY: 3.75, // Increased from 3.125 to 3.75 (20% faster)
                 paddleSpeed: 5,
                 leftPaddleY: window.innerHeight / 2 - 60,
                 rightPaddleY: window.innerHeight / 2 - 60,
@@ -944,9 +978,9 @@
                 lastBallY: window.innerHeight / 2,  // Store previous ball position for better collision
                 subSteps: 16, // Increased from 12 to 16 for more precise collision detection
                 userPaddleExtraWidth: 20, // Increased from 12 to 20 for much wider detection
-                speedBoostApplied: false, // Track if first speed boost has been applied
-                secondSpeedBoostApplied: false, // Track if second speed boost has been applied
-                originalBallSpeed: 6.25 // Updated from 5 to 6.25 (25% faster)
+                speedBoostStage: 0, // Track how many speed boosts have been applied
+                originalBallSpeed: 9.375, // Updated from 7.8125 to 9.375 (20% faster)
+                collisionCooldown: 0 // Add collision cooldown counter
             };
             
             // Game loop variables
@@ -992,29 +1026,23 @@
                 gameState.lastBallX = gameState.ballX;
                 gameState.lastBallY = gameState.ballY;
                 
-                // Set the base speed based on speed boosts applied
-                let baseSpeed = 6.25; // Default speed (increased from 5 to 6.25)
-                if (gameState.secondSpeedBoostApplied) {
-                    // Second boost: +20% on top of first boost (which was +25%)
-                    // Total: 1.25 * 1.20 = 1.5 (50% faster)
-                    baseSpeed = gameState.originalBallSpeed * 1.2;
-                } else if (gameState.speedBoostApplied) {
-                    // First boost: +25%
-                    baseSpeed = gameState.originalBallSpeed;
+                // Set the base speed based on speed boost stage
+                let baseSpeed = gameState.originalBallSpeed;
+                
+                // Apply progressive speed boosts based on the current stage
+                if (gameState.speedBoostStage > 0) {
+                    // Calculate: originalSpeed * (1.25^stage)
+                    // For stage 1: 25% increase, stage 2: 56% increase, stage 3: 95% increase, etc.
+                    baseSpeed = gameState.originalBallSpeed * Math.pow(1.25, gameState.speedBoostStage);
                 }
                 
                 // Set random direction but with consistent speed
                 gameState.ballSpeedX = Math.random() > 0.5 ? baseSpeed : -baseSpeed;
                 
                 // Set Y speed with appropriate scaling for boosts
-                let ySpeedFactor = 1;
-                if (gameState.secondSpeedBoostApplied) {
-                    ySpeedFactor = 1.5; // 50% faster at second boost
-                } else if (gameState.speedBoostApplied) {
-                    ySpeedFactor = 1.25; // 25% faster at first boost
-                }
+                let ySpeedFactor = Math.pow(1.25, gameState.speedBoostStage);
                 
-                gameState.ballSpeedY = (Math.random() * 5 - 2.5) * ySpeedFactor; // Increased range from 4/-2 to 5/-2.5
+                gameState.ballSpeedY = (Math.random() * 5 - 2.5) * ySpeedFactor;
                 
                 // Reset ball position history
                 ballPositions.length = 0;
@@ -1138,6 +1166,11 @@
                     }
                 });
                 
+                // Decrease collision cooldown if active
+                if (gameState.collisionCooldown > 0) {
+                    gameState.collisionCooldown--;
+                }
+                
                 // Sub-stepping for better collision detection (prevents tunneling)
                 const subStepX = gameState.ballSpeedX / gameState.subSteps;
                 const subStepY = gameState.ballSpeedY / gameState.subSteps;
@@ -1185,20 +1218,63 @@
                         break;
                     }
                     
-                    // Left paddle collision with expanded hitbox
-                    const leftPaddleX = 20;
-                    if (checkPaddleCollision(
-                        gameState.ballX, 
-                        gameState.ballY, 
-                        leftPaddleX, 
-                        gameState.leftPaddleY, 
-                        gameState.paddleWidth,
-                        gameState.paddleHeight
-                    )) {
-                        // Only bounce if moving toward the paddle
-                        if (gameState.ballSpeedX < 0) {
+                    // Only check paddle collisions if cooldown is not active
+                    if (gameState.collisionCooldown === 0) {
+                        // Left paddle collision with expanded hitbox
+                        const leftPaddleX = 20;
+                        if (checkPaddleCollision(
+                            gameState.ballX, 
+                            gameState.ballY, 
+                            leftPaddleX, 
+                            gameState.leftPaddleY, 
+                            gameState.paddleWidth,
+                            gameState.paddleHeight
+                        )) {
+                            // Only bounce if moving toward the paddle
+                            if (gameState.ballSpeedX < 0) {
+                                // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
+                                const relativeImpact = (gameState.ballY - gameState.leftPaddleY) / gameState.paddleHeight;
+                                
+                                // Angle calculation: -45 to 45 degrees based on where it hits
+                                const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
+                                
+                                // Ball speed after collision - maintain total speed but change direction
+                                const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
+                                
+                                // Reverse X direction and adjust Y based on impact point
+                                gameState.ballSpeedX = Math.abs(speed * Math.cos(bounceAngle));
+                                gameState.ballSpeedY = speed * Math.sin(bounceAngle);
+                                
+                                // Ensure ball is outside the paddle - with greater push
+                                gameState.ballX = leftPaddleX + gameState.paddleWidth + gameState.ballSize/2 + 5;
+                                
+                                // Set collision cooldown (prevents multiple collisions in quick succession)
+                                gameState.collisionCooldown = 10;
+                                
+                                hadPaddleCollision = true;
+                                
+                                // Break out of the sub-steps after collision
+                                break;
+                            }
+                        }
+                        
+                        // Right paddle (user paddle) collision with ultra-robust detection - IMPROVED
+                        const rightPaddleX = window.innerWidth - 20 - gameState.paddleWidth;
+                        
+                        // Improved user paddle collision detection with more aggressive parameters
+                        if (checkUserPaddleCollision(
+                            gameState.ballX, 
+                            gameState.ballY,
+                            lastCleanX,
+                            lastCleanY,
+                            rightPaddleX, 
+                            gameState.rightPaddleY, 
+                            gameState.paddleWidth,
+                            gameState.paddleHeight
+                        )) {
+                            // Always bounce regardless of direction to fix tunneling issues
                             // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
-                            const relativeImpact = (gameState.ballY - gameState.leftPaddleY) / gameState.paddleHeight;
+                            const relativeImpact = (gameState.ballY - gameState.rightPaddleY) / gameState.paddleHeight;
                             
                             // Angle calculation: -45 to 45 degrees based on where it hits
                             const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
@@ -1207,55 +1283,21 @@
                             const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
                             
                             // Reverse X direction and adjust Y based on impact point
-                            gameState.ballSpeedX = Math.abs(speed * Math.cos(bounceAngle));
+                            gameState.ballSpeedX = -Math.abs(speed * Math.cos(bounceAngle));
                             gameState.ballSpeedY = speed * Math.sin(bounceAngle);
                             
-                            // Ensure ball is outside the paddle - with greater push
-                            gameState.ballX = leftPaddleX + gameState.paddleWidth + gameState.ballSize/2 + 5;
+                            // Always ensure ball is outside the paddle, even if it tunneled through
+                            // Use a larger push out value to prevent sticking
+                            gameState.ballX = rightPaddleX - gameState.ballSize/2 - 5;
+                            
+                            // Set collision cooldown (prevents multiple collisions in quick succession)
+                            gameState.collisionCooldown = 10;
                             
                             hadPaddleCollision = true;
                             
                             // Break out of the sub-steps after collision
                             break;
                         }
-                    }
-                    
-                    // Right paddle (user paddle) collision with ultra-robust detection - IMPROVED
-                    const rightPaddleX = window.innerWidth - 20 - gameState.paddleWidth;
-                    
-                    // Improved user paddle collision detection with more aggressive parameters
-                    if (checkUserPaddleCollision(
-                        gameState.ballX, 
-                        gameState.ballY,
-                        lastCleanX,
-                        lastCleanY,
-                        rightPaddleX, 
-                        gameState.rightPaddleY, 
-                        gameState.paddleWidth,
-                        gameState.paddleHeight
-                    )) {
-                        // Always bounce regardless of direction to fix tunneling issues
-                        // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
-                        const relativeImpact = (gameState.ballY - gameState.rightPaddleY) / gameState.paddleHeight;
-                        
-                        // Angle calculation: -45 to 45 degrees based on where it hits
-                        const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
-                        
-                        // Ball speed after collision - maintain total speed but change direction
-                        const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
-                        
-                        // Reverse X direction and adjust Y based on impact point
-                        gameState.ballSpeedX = -Math.abs(speed * Math.cos(bounceAngle));
-                        gameState.ballSpeedY = speed * Math.sin(bounceAngle);
-                        
-                        // Always ensure ball is outside the paddle, even if it tunneled through
-                        // Use a larger push out value to prevent sticking
-                        gameState.ballX = rightPaddleX - gameState.ballSize/2 - 5;
-                        
-                        hadPaddleCollision = true;
-                        
-                        // Break out of the sub-steps after collision
-                        break;
                     }
                     
                     // Update last clean position if no collision happened
@@ -1279,19 +1321,23 @@
                             gameState.cpuDifficultyStage++;
                         }
                         
-                        // Apply first speed boost after 5 goals by either player
-                        if (!gameState.speedBoostApplied && (gameState.rightPoints >= 5 || gameState.leftPoints >= 5)) {
-                            // Increase ball speed by 25%
-                            const speedMultiplier = 1.25;
-                            gameState.originalBallSpeed *= speedMultiplier;
-                            gameState.speedBoostApplied = true;
+                        // Check total score for speed boosts
+                        let totalScore = gameState.leftPoints + gameState.rightPoints;
+                        
+                        // First boost at 10 goals total, then every 5 goals thereafter
+                        let newBoostStage = 0;
+                        if (totalScore >= 10) {
+                            // Calculate how many boosts should be applied
+                            // At 10 goals: 1 boost
+                            // At 15 goals: 2 boosts
+                            // At 20 goals: 3 boosts, etc.
+                            newBoostStage = 1 + Math.floor((totalScore - 10) / 5);
                         }
                         
-                        // Apply second speed boost after 8 goals by either player
-                        if (gameState.speedBoostApplied && !gameState.secondSpeedBoostApplied && 
-                            (gameState.rightPoints >= 8 || gameState.leftPoints >= 8)) {
-                            // Increase ball speed by another 20%
-                            gameState.secondSpeedBoostApplied = true;
+                        // Only apply if this is a new boost stage
+                        if (newBoostStage > gameState.speedBoostStage) {
+                            gameState.speedBoostStage = newBoostStage;
+                            console.log(`Speed boost stage ${newBoostStage}: Ball is now ${Math.pow(1.25, newBoostStage).toFixed(2)}x original speed`);
                         }
                         
                         resetBall();
@@ -1308,19 +1354,23 @@
                             leftPaddle.classList.remove('paddle-glow');
                         }, 1000);
                         
-                        // Apply first speed boost after 5 goals by either player
-                        if (!gameState.speedBoostApplied && (gameState.rightPoints >= 5 || gameState.leftPoints >= 5)) {
-                            // Increase ball speed by 25%
-                            const speedMultiplier = 1.25;
-                            gameState.originalBallSpeed *= speedMultiplier;
-                            gameState.speedBoostApplied = true;
+                        // Check total score for speed boosts
+                        let totalScore = gameState.leftPoints + gameState.rightPoints;
+                        
+                        // First boost at 10 goals total, then every 5 goals thereafter
+                        let newBoostStage = 0;
+                        if (totalScore >= 10) {
+                            // Calculate how many boosts should be applied
+                            // At 10 goals: 1 boost
+                            // At 15 goals: 2 boosts
+                            // At 20 goals: 3 boosts, etc.
+                            newBoostStage = 1 + Math.floor((totalScore - 10) / 5);
                         }
                         
-                        // Apply second speed boost after 8 goals by either player
-                        if (gameState.speedBoostApplied && !gameState.secondSpeedBoostApplied && 
-                            (gameState.rightPoints >= 8 || gameState.leftPoints >= 8)) {
-                            // Increase ball speed by another 20%
-                            gameState.secondSpeedBoostApplied = true;
+                        // Only apply if this is a new boost stage
+                        if (newBoostStage > gameState.speedBoostStage) {
+                            gameState.speedBoostStage = newBoostStage;
+                            console.log(`Speed boost stage ${newBoostStage}: Ball is now ${Math.pow(1.25, newBoostStage).toFixed(2)}x original speed`);
                         }
                         
                         resetBall();
