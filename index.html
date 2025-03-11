@@ -44,6 +44,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap for all elements */
         }
 
         body {
@@ -51,6 +52,7 @@
             color: var(--text-primary);
             overflow-x: hidden;
             position: relative;
+            -webkit-touch-callout: none; /* Prevent callout to copy image, etc when tap to hold */
         }
 
         #particles-canvas, #wave-canvas {
@@ -135,6 +137,7 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             height: 100%;
+            cursor: pointer;
         }
 
         .card:hover {
@@ -441,6 +444,14 @@
                 font-size: 1.2rem;
             }
         }
+
+        .card-buttons a,
+        .social-icons a,
+        .site-links a {
+            -webkit-tap-highlight-color: transparent; /* Explicitly remove for interactive elements */
+            outline: none; /* Remove outline for buttons and links */
+            user-select: none; /* Prevent text selection on buttons */
+        }
     </style>
 </head>
 <body>
@@ -480,7 +491,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Shapes</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/Drbaph_shapes" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/Drbaph_shapes" class="repo-btn">Code</a>
                             <a href="https://app.drbaph.com/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -500,7 +511,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Dot Matrix</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/.matrix" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/.matrix" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/.matrix/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -520,7 +531,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Synthrain</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/SynthRain" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/SynthRain" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/SynthRain/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -540,7 +551,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Swarm</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/Swarm" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/Swarm" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/Swarm/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -560,7 +571,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Neon Oracle</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/NeonOracle" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/NeonOracle" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/NeonOracle/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -580,7 +591,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Aetherstrum</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/AetherStrum" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/AetherStrum" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/AetherStrum/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -600,7 +611,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">LofiLamp</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/LofiLamp" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/LofiLamp" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/LofiLamp/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -620,7 +631,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">EZ Piano</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/EZPiano" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/EZPiano" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/EZPiano/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -640,7 +651,7 @@
                     <h3 class="card-title">
                         <span class="card-title-text">Greentendo</span>
                         <div class="card-buttons">
-                            <a href="https://github.com/Saganaki22/Greentendo/" class="repo-btn">code</a>
+                            <a href="https://github.com/Saganaki22/Greentendo/" class="repo-btn">Code</a>
                             <a href="https://saganaki22.github.io/Greentendo/" class="demo-btn">DEMO</a>
                         </div>
                     </h3>
@@ -931,8 +942,8 @@
                 cpuDifficultyStage: 0, // Tracks how many times difficulty has increased
                 lastBallX: window.innerWidth / 2, // Store previous ball position for better collision
                 lastBallY: window.innerHeight / 2,  // Store previous ball position for better collision
-                subSteps: 12, // Increased from 8 to 12 for more precise collision detection
-                userPaddleExtraWidth: 12, // Increased from 8 to 12
+                subSteps: 16, // Increased from 12 to 16 for more precise collision detection
+                userPaddleExtraWidth: 20, // Increased from 12 to 20 for much wider detection
                 speedBoostApplied: false, // Track if first speed boost has been applied
                 secondSpeedBoostApplied: false, // Track if second speed boost has been applied
                 originalBallSpeed: 6.25 // Updated from 5 to 6.25 (25% faster)
@@ -1014,18 +1025,18 @@
                 return (
                     x - gameState.ballSize/2 <= paddleX + paddleWidth &&
                     x + gameState.ballSize/2 >= paddleX &&
-                    y >= paddleY &&
-                    y <= paddleY + paddleHeight
+                    y >= paddleY - gameState.ballSize/2 && // Added ball size to increase vertical collision area
+                    y <= paddleY + paddleHeight + gameState.ballSize/2 // Added ball size to increase vertical collision area
                 );
             }
             
-            // Special function for user paddle with expanded hitbox
+            // Special function for user paddle with expanded hitbox - IMPROVED
             function checkUserPaddleCollision(x, y, lastX, lastY, paddleX, paddleY, paddleWidth, paddleHeight) {
-                // Regular collision
+                // Regular collision with expanded vertical area
                 const normalCollision = checkPaddleCollision(x, y, paddleX, paddleY, paddleWidth, paddleHeight);
                 
                 // Check if ball has "tunneled" through the paddle between frames
-                const ballWasInFrontOfPaddle = lastX < paddleX + paddleWidth/2; // Changed to half paddle width
+                const ballWasInFrontOfPaddle = lastX < paddleX;
                 const ballIsAfterPaddle = x > paddleX + paddleWidth;
                 const tunnelY = y >= paddleY - gameState.ballSize && y <= paddleY + paddleHeight + gameState.ballSize;
                 const tunneled = ballWasInFrontOfPaddle && ballIsAfterPaddle && tunnelY;
@@ -1033,10 +1044,10 @@
                 // Extra buffer for right side boundary - make hitbox even bigger
                 const extendedCollision = checkPaddleCollision(
                     x, y,
-                    paddleX - gameState.userPaddleExtraWidth, // Extend paddle hitbox to left
-                    paddleY - gameState.ballSize, // Extend paddle hitbox up
-                    paddleWidth + gameState.userPaddleExtraWidth * 2, // Widen the hitbox
-                    paddleHeight + gameState.ballSize * 2 // Extend paddle hitbox down more
+                    paddleX - gameState.userPaddleExtraWidth * 1.5, // Extend paddle hitbox to left even more
+                    paddleY - gameState.ballSize * 1.5, // Extend paddle hitbox up more
+                    paddleWidth + gameState.userPaddleExtraWidth * 3, // Widen the hitbox significantly
+                    paddleHeight + gameState.ballSize * 3 // Extend paddle hitbox down more
                 );
                 
                 // Enhanced line intersection test - check if the ball's path crosses the paddle
@@ -1046,23 +1057,51 @@
                 const dx = x - lastX;
                 const dy = y - lastY;
                 
-                // Only perform checks if the ball has moved a significant distance
-                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-                    // Check for intersection with left edge of paddle
-                    const leftEdgeX = paddleX;
+                // Check for any significant movement
+                if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+                    // Check for intersection with any edge of paddle (left, right, top, bottom)
                     
-                    // Parametric equation parameter for line intersection
-                    const t = (leftEdgeX - lastX) / (x - lastX);
+                    // Left edge
+                    if (dx !== 0) { // Avoid division by zero
+                        const t1 = (paddleX - lastX) / dx;
+                        if (t1 >= 0 && t1 <= 1) {
+                            const y1 = lastY + t1 * dy;
+                            if (y1 >= paddleY - gameState.ballSize && y1 <= paddleY + paddleHeight + gameState.ballSize) {
+                                lineIntersection = true;
+                            }
+                        }
+                    }
                     
-                    // Check if intersection point is within the current frame's movement
-                    if (t >= 0 && t <= 1) {
-                        // Calculate Y position at intersection
-                        const intersectionY = lastY + t * (y - lastY);
-                        
-                        // Check if intersection is within paddle height (with buffer)
-                        if (intersectionY >= paddleY - gameState.ballSize/2 && 
-                            intersectionY <= paddleY + paddleHeight + gameState.ballSize/2) {
-                            lineIntersection = true;
+                    // Right edge
+                    if (dx !== 0) { // Avoid division by zero
+                        const t2 = (paddleX + paddleWidth - lastX) / dx;
+                        if (t2 >= 0 && t2 <= 1) {
+                            const y2 = lastY + t2 * dy;
+                            if (y2 >= paddleY - gameState.ballSize && y2 <= paddleY + paddleHeight + gameState.ballSize) {
+                                lineIntersection = true;
+                            }
+                        }
+                    }
+                    
+                    // Top edge
+                    if (dy !== 0) { // Avoid division by zero
+                        const t3 = (paddleY - lastY) / dy;
+                        if (t3 >= 0 && t3 <= 1) {
+                            const x3 = lastX + t3 * dx;
+                            if (x3 >= paddleX - gameState.ballSize && x3 <= paddleX + paddleWidth + gameState.ballSize) {
+                                lineIntersection = true;
+                            }
+                        }
+                    }
+                    
+                    // Bottom edge
+                    if (dy !== 0) { // Avoid division by zero
+                        const t4 = (paddleY + paddleHeight - lastY) / dy;
+                        if (t4 >= 0 && t4 <= 1) {
+                            const x4 = lastX + t4 * dx;
+                            if (x4 >= paddleX - gameState.ballSize && x4 <= paddleX + paddleWidth + gameState.ballSize) {
+                                lineIntersection = true;
+                            }
                         }
                     }
                 }
@@ -1116,34 +1155,34 @@
                     gameState.ballX += subStepX;
                     gameState.ballY += subStepY;
                     
-                    // Ball collision with top and bottom walls
+                    // Ball collision with top and bottom walls - IMPROVED
                     if (gameState.ballY <= gameState.ballSize/2 || gameState.ballY >= window.innerHeight - gameState.ballSize/2) {
                         // Calculate current ball velocity vector
                         const currentSpeed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
                         
-                        // Store the sign of Y velocity before changing it
-                        const ySign = Math.sign(gameState.ballSpeedY);
-                        
-                        // Reverse Y direction - multiply by -1 to ensure proper reversal
+                        // Reverse Y direction with a more significant push
                         gameState.ballSpeedY = -gameState.ballSpeedY;
                         
                         // Ensure Y velocity isn't too small (prevents horizontal movement)
-                        if (Math.abs(gameState.ballSpeedY) < 0.5) {
-                            // If Y velocity is too small, give it a minimum value
-                            gameState.ballSpeedY = ySign * -1 * Math.max(1, currentSpeed * 0.3);
+                        if (Math.abs(gameState.ballSpeedY) < 1.0) {
+                            // If Y velocity is too small, give it a stronger minimum value
+                            gameState.ballSpeedY = (gameState.ballSpeedY > 0 ? 1 : -1) * Math.max(1.5, currentSpeed * 0.4);
                         }
                         
-                        // Ensure the ball doesn't get stuck in the wall
+                        // Push the ball out of the wall with more force
                         if (gameState.ballY <= gameState.ballSize/2) {
-                            gameState.ballY = gameState.ballSize/2 + 2; // Increased push out distance
+                            gameState.ballY = gameState.ballSize/2 + 5; // Increased push out distance significantly
                         } else if (gameState.ballY >= window.innerHeight - gameState.ballSize/2) {
-                            gameState.ballY = window.innerHeight - gameState.ballSize/2 - 2; // Increased push out distance
+                            gameState.ballY = window.innerHeight - gameState.ballSize/2 - 5; // Increased push out distance significantly
                         }
                         
-                        // Add slight randomness to prevent predictable patterns (reduced amount)
-                        gameState.ballSpeedX += (Math.random() - 0.5) * 0.3;
+                        // Add more randomness to prevent predictable patterns
+                        gameState.ballSpeedX += (Math.random() - 0.5) * 0.5;
                         
                         hadWallCollision = true;
+                        
+                        // Break out of this sub-step after wall collision to prevent further issues
+                        break;
                     }
                     
                     // Left paddle collision with expanded hitbox
@@ -1171,8 +1210,8 @@
                             gameState.ballSpeedX = Math.abs(speed * Math.cos(bounceAngle));
                             gameState.ballSpeedY = speed * Math.sin(bounceAngle);
                             
-                            // Ensure ball is outside the paddle
-                            gameState.ballX = leftPaddleX + gameState.paddleWidth + gameState.ballSize/2 + 1;
+                            // Ensure ball is outside the paddle - with greater push
+                            gameState.ballX = leftPaddleX + gameState.paddleWidth + gameState.ballSize/2 + 5;
                             
                             hadPaddleCollision = true;
                             
@@ -1181,10 +1220,10 @@
                         }
                     }
                     
-                    // Right paddle (user paddle) collision with ultra-robust detection
+                    // Right paddle (user paddle) collision with ultra-robust detection - IMPROVED
                     const rightPaddleX = window.innerWidth - 20 - gameState.paddleWidth;
                     
-                    // Use the enhanced user paddle collision detection with even more aggressive parameters
+                    // Improved user paddle collision detection with more aggressive parameters
                     if (checkUserPaddleCollision(
                         gameState.ballX, 
                         gameState.ballY,
@@ -1195,29 +1234,28 @@
                         gameState.paddleWidth,
                         gameState.paddleHeight
                     )) {
-                        // Only bounce if moving toward the paddle or if tunneled through
-                        if (gameState.ballSpeedX > 0 || gameState.ballX > rightPaddleX + gameState.paddleWidth) {
-                            // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
-                            const relativeImpact = (gameState.ballY - gameState.rightPaddleY) / gameState.paddleHeight;
-                            
-                            // Angle calculation: -45 to 45 degrees based on where it hits
-                            const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
-                            
-                            // Ball speed after collision - maintain total speed but change direction
-                            const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
-                            
-                            // Reverse X direction and adjust Y based on impact point
-                            gameState.ballSpeedX = -Math.abs(speed * Math.cos(bounceAngle));
-                            gameState.ballSpeedY = speed * Math.sin(bounceAngle);
-                            
-                            // Always ensure ball is outside the paddle, even if it tunneled through
-                            gameState.ballX = rightPaddleX - gameState.ballSize/2 - 1;
-                            
-                            hadPaddleCollision = true;
-                            
-                            // Break out of the sub-steps after collision
-                            break;
-                        }
+                        // Always bounce regardless of direction to fix tunneling issues
+                        // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
+                        const relativeImpact = (gameState.ballY - gameState.rightPaddleY) / gameState.paddleHeight;
+                        
+                        // Angle calculation: -45 to 45 degrees based on where it hits
+                        const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
+                        
+                        // Ball speed after collision - maintain total speed but change direction
+                        const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
+                        
+                        // Reverse X direction and adjust Y based on impact point
+                        gameState.ballSpeedX = -Math.abs(speed * Math.cos(bounceAngle));
+                        gameState.ballSpeedY = speed * Math.sin(bounceAngle);
+                        
+                        // Always ensure ball is outside the paddle, even if it tunneled through
+                        // Use a larger push out value to prevent sticking
+                        gameState.ballX = rightPaddleX - gameState.ballSize/2 - 5;
+                        
+                        hadPaddleCollision = true;
+                        
+                        // Break out of the sub-steps after collision
+                        break;
                     }
                     
                     // Update last clean position if no collision happened
@@ -1364,20 +1402,72 @@
         
         // Card video playback
         document.querySelectorAll('.card').forEach(card => {
+            const video = card.querySelector('.card-video');
+            const demoLink = card.querySelector('.demo-btn').getAttribute('href');
+
+            // Make entire card clickable
+            card.addEventListener('click', (e) => {
+                // Only navigate if not clicking on the buttons
+                if (!e.target.closest('.card-buttons')) {
+                    window.open(demoLink, '_blank');
+                }
+            });
+            
+            // Add touch event listeners for mobile
+            card.addEventListener('touchstart', (e) => {
+                // Play video on touch start
+                if (video && !video.playing) {
+                    video.play();
+                }
+            });
+            
+            card.addEventListener('touchend', (e) => {
+                // Only navigate if not touching the buttons
+                if (!e.target.closest('.card-buttons')) {
+                    // Prevent default to avoid double-triggering with click
+                    e.preventDefault();
+                    window.open(demoLink, '_blank');
+                }
+            });
+            
             card.addEventListener('mouseenter', () => {
-                const video = card.querySelector('.card-video');
                 if (video) {
                     video.play();
                 }
             });
             
             card.addEventListener('mouseleave', () => {
-                const video = card.querySelector('.card-video');
                 if (video) {
                     video.pause();
                     video.currentTime = 0;
                 }
             });
+        });
+        
+        // Add touch support for Pong game
+        document.addEventListener('touchmove', (e) => {
+            // Reset timer only if game hasn't started yet
+            if (!gameStarted) {
+                resetInactivityTimer();
+            }
+            
+            if (pongActive && e.touches.length > 0) {
+                // Get the first touch
+                const touch = e.touches[0];
+                // Control paddle with touch Y position
+                gameState.rightPaddleY = touch.clientY - gameState.paddleHeight/2;
+                
+                // Prevent scrolling while playing
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Add touch listeners for stopping game
+        document.addEventListener('touchstart', () => {
+            if (gameStarted) {
+                stopPong();
+            }
+            resetInactivityTimer();
         });
     </script>
 </body>
