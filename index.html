@@ -387,6 +387,17 @@
             pointer-events: none;
         }
 
+        .ball-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+        }
+
         .pong-score {
             position: fixed;
             font-size: 48px;
@@ -980,11 +991,107 @@
                 userPaddleExtraWidth: 20, // Increased from 12 to 20 for much wider detection
                 speedBoostStage: 0, // Track how many speed boosts have been applied
                 originalBallSpeed: 9.375, // Updated from 7.8125 to 9.375 (20% faster)
-                collisionCooldown: 0 // Add collision cooldown counter
+                collisionCooldown: 0, // Add collision cooldown counter
+                explosionOccurred: false, // Track if the explosion at 50 points has occurred
+                ballVisible: true, // Track if the ball is visible
+                nextExplosionThreshold: 50, // Track when the next explosion should occur
+                postExplosionBoost: false, // Track if we're in post-explosion mode (20% boosts)
+                lastExplosionScore: 0 // Track the score at which the last explosion occurred
             };
             
             // Game loop variables
             let animationFrame;
+            
+            // Function to create particle explosion effect
+            function createExplosion(x, y) {
+                const numParticles = 60;
+                const particles = [];
+                const colors = ['#FFFFFF', '#00AAFF', '#FF00AA', '#FFFF00', '#00FFAA'];
+                
+                // Hide the ball
+                gameState.ballVisible = false;
+                ball.style.display = 'none';
+                
+                // Hide tracers
+                tracers.forEach(tracer => {
+                    tracer.style.opacity = '0';
+                });
+                
+                // Create particles
+                for (let i = 0; i < numParticles; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'ball-particle';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    
+                    // Random size between 2px and 6px
+                    const size = Math.random() * 4 + 2;
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    
+                    // Random color
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // Add to container
+                    pongContainer.appendChild(particle);
+                    particles.push({
+                        element: particle,
+                        // Random velocity
+                        vx: (Math.random() - 0.5) * 15,
+                        vy: (Math.random() - 0.5) * 15,
+                        // Random rotation and scale
+                        rotation: Math.random() * 360,
+                        rotationSpeed: (Math.random() - 0.5) * 20,
+                        opacity: 1
+                    });
+                }
+                
+                // Animate particles
+                let start = null;
+                const duration = 1500; // 1.5 seconds
+                
+                function animateParticles(timestamp) {
+                    if (!start) start = timestamp;
+                    const progress = timestamp - start;
+                    const normalizedProgress = Math.min(progress / duration, 1);
+                    
+                    particles.forEach(particle => {
+                        // Update position
+                        const newX = parseFloat(particle.element.style.left) + particle.vx;
+                        const newY = parseFloat(particle.element.style.top) + particle.vy;
+                        particle.element.style.left = newX + 'px';
+                        particle.element.style.top = newY + 'px';
+                        
+                        // Update rotation
+                        particle.rotation += particle.rotationSpeed;
+                        particle.element.style.transform = `rotate(${particle.rotation}deg)`;
+                        
+                        // Update opacity
+                        particle.opacity = 1 - normalizedProgress;
+                        particle.element.style.opacity = particle.opacity;
+                        
+                        // Add gravity effect
+                        particle.vy += 0.1;
+                    });
+                    
+                    if (progress < duration) {
+                        requestAnimationFrame(animateParticles);
+                    } else {
+                        // Animation completed
+                        particles.forEach(particle => {
+                            pongContainer.removeChild(particle.element);
+                        });
+                        
+                        // Show the ball again and reset its speed
+                        gameState.ballVisible = true;
+                        ball.style.display = 'block';
+                        gameState.speedBoostStage = 0;
+                        resetBall();
+                    }
+                }
+                
+                requestAnimationFrame(animateParticles);
+            }
             
             function resetInactivityTimer() {
                 clearTimeout(inactivityTimer);
@@ -1031,16 +1138,25 @@
                 
                 // Apply progressive speed boosts based on the current stage
                 if (gameState.speedBoostStage > 0) {
-                    // Calculate: originalSpeed * (1.25^stage)
-                    // For stage 1: 25% increase, stage 2: 56% increase, stage 3: 95% increase, etc.
-                    baseSpeed = gameState.originalBallSpeed * Math.pow(1.25, gameState.speedBoostStage);
+                    if (gameState.postExplosionBoost) {
+                        // After 50 points explosion, apply 20% increases
+                        baseSpeed = gameState.originalBallSpeed * Math.pow(1.20, gameState.speedBoostStage);
+                    } else {
+                        // Before 50 points explosion, apply 25% increases
+                        baseSpeed = gameState.originalBallSpeed * Math.pow(1.25, gameState.speedBoostStage);
+                    }
                 }
                 
                 // Set random direction but with consistent speed
                 gameState.ballSpeedX = Math.random() > 0.5 ? baseSpeed : -baseSpeed;
                 
                 // Set Y speed with appropriate scaling for boosts
-                let ySpeedFactor = Math.pow(1.25, gameState.speedBoostStage);
+                let ySpeedFactor;
+                if (gameState.postExplosionBoost) {
+                    ySpeedFactor = Math.pow(1.20, gameState.speedBoostStage);
+                } else {
+                    ySpeedFactor = Math.pow(1.25, gameState.speedBoostStage);
+                }
                 
                 gameState.ballSpeedY = (Math.random() * 5 - 2.5) * ySpeedFactor;
                 
@@ -1139,6 +1255,12 @@
             
             function gameLoop() {
                 if (!pongActive) return;
+                
+                // If the ball is not visible (during explosion), skip movement and collision
+                if (!gameState.ballVisible) {
+                    animationFrame = requestAnimationFrame(gameLoop);
+                    return;
+                }
                 
                 // Store previous position for tracer and collision detection
                 gameState.lastBallX = gameState.ballX;
@@ -1321,26 +1443,49 @@
                             gameState.cpuDifficultyStage++;
                         }
                         
-                        // Check total score for speed boosts
+                        // Calculate total score
                         let totalScore = gameState.leftPoints + gameState.rightPoints;
                         
-                        // First boost at 10 goals total, then every 5 goals thereafter
-                        let newBoostStage = 0;
-                        if (totalScore >= 10) {
-                            // Calculate how many boosts should be applied
-                            // At 10 goals: 1 boost
-                            // At 15 goals: 2 boosts
-                            // At 20 goals: 3 boosts, etc.
-                            newBoostStage = 1 + Math.floor((totalScore - 10) / 5);
+                        // Check for explosion threshold
+                        if (totalScore === gameState.nextExplosionThreshold) {
+                            // Create explosion at current ball position
+                            createExplosion(gameState.ballX, gameState.ballY);
+                            gameState.explosionOccurred = true;
+                            gameState.lastExplosionScore = totalScore;
+                            
+                            // Update explosion threshold for next time
+                            if (gameState.nextExplosionThreshold === 50) {
+                                gameState.nextExplosionThreshold = 100;
+                                gameState.postExplosionBoost = true; // Switch to 20% boosts after 50
+                                console.log("🎆 EXPLOSION AT 50 POINTS! 🎆 Next explosion at 100 points. Speed will now increase by 20% every 5 goals.");
+                            } else if (gameState.nextExplosionThreshold === 100) {
+                                gameState.nextExplosionThreshold = 150;
+                                console.log("🎆 EXPLOSION AT 100 POINTS! 🎆 Next explosion at 150 points.");
+                            } else {
+                                gameState.nextExplosionThreshold += 50;
+                                console.log(`🎆 EXPLOSION AT ${totalScore} POINTS! 🎆 Next explosion at ${gameState.nextExplosionThreshold} points.`);
+                            }
+                            
+                            // Reset speed boost stage - will be done in createExplosion function
+                        } else {
+                            // Check if we need to apply speed boost (every 5 goals since last explosion)
+                            let goalsSinceLastExplosion = totalScore - gameState.lastExplosionScore;
+                            
+                            if (goalsSinceLastExplosion > 0 && goalsSinceLastExplosion % 5 === 0) {
+                                gameState.speedBoostStage++;
+                                
+                                // Log the speed boost with the correct percentage
+                                let boostPercentage = gameState.postExplosionBoost ? 20 : 25;
+                                let totalBoost = gameState.postExplosionBoost ? 
+                                    Math.pow(1.20, gameState.speedBoostStage).toFixed(2) : 
+                                    Math.pow(1.25, gameState.speedBoostStage).toFixed(2);
+                                
+                                console.log(`Speed boost stage ${gameState.speedBoostStage}: Ball is now ${totalBoost}x original speed (+${boostPercentage}% per stage)`);
+                            }
+                            
+                            resetBall();
                         }
                         
-                        // Only apply if this is a new boost stage
-                        if (newBoostStage > gameState.speedBoostStage) {
-                            gameState.speedBoostStage = newBoostStage;
-                            console.log(`Speed boost stage ${newBoostStage}: Ball is now ${Math.pow(1.25, newBoostStage).toFixed(2)}x original speed`);
-                        }
-                        
-                        resetBall();
                         break;
                     }
                     
@@ -1354,26 +1499,49 @@
                             leftPaddle.classList.remove('paddle-glow');
                         }, 1000);
                         
-                        // Check total score for speed boosts
+                        // Calculate total score
                         let totalScore = gameState.leftPoints + gameState.rightPoints;
                         
-                        // First boost at 10 goals total, then every 5 goals thereafter
-                        let newBoostStage = 0;
-                        if (totalScore >= 10) {
-                            // Calculate how many boosts should be applied
-                            // At 10 goals: 1 boost
-                            // At 15 goals: 2 boosts
-                            // At 20 goals: 3 boosts, etc.
-                            newBoostStage = 1 + Math.floor((totalScore - 10) / 5);
+                        // Check for explosion threshold
+                        if (totalScore === gameState.nextExplosionThreshold) {
+                            // Create explosion at current ball position
+                            createExplosion(gameState.ballX, gameState.ballY);
+                            gameState.explosionOccurred = true;
+                            gameState.lastExplosionScore = totalScore;
+                            
+                            // Update explosion threshold for next time
+                            if (gameState.nextExplosionThreshold === 50) {
+                                gameState.nextExplosionThreshold = 100;
+                                gameState.postExplosionBoost = true; // Switch to 20% boosts after 50
+                                console.log("🎆 EXPLOSION AT 50 POINTS! 🎆 Next explosion at 100 points. Speed will now increase by 20% every 5 goals.");
+                            } else if (gameState.nextExplosionThreshold === 100) {
+                                gameState.nextExplosionThreshold = 150;
+                                console.log("🎆 EXPLOSION AT 100 POINTS! 🎆 Next explosion at 150 points.");
+                            } else {
+                                gameState.nextExplosionThreshold += 50;
+                                console.log(`🎆 EXPLOSION AT ${totalScore} POINTS! 🎆 Next explosion at ${gameState.nextExplosionThreshold} points.`);
+                            }
+                            
+                            // Reset speed boost stage - will be done in createExplosion function
+                        } else {
+                            // Check if we need to apply speed boost (every 5 goals since last explosion)
+                            let goalsSinceLastExplosion = totalScore - gameState.lastExplosionScore;
+                            
+                            if (goalsSinceLastExplosion > 0 && goalsSinceLastExplosion % 5 === 0) {
+                                gameState.speedBoostStage++;
+                                
+                                // Log the speed boost with the correct percentage
+                                let boostPercentage = gameState.postExplosionBoost ? 20 : 25;
+                                let totalBoost = gameState.postExplosionBoost ? 
+                                    Math.pow(1.20, gameState.speedBoostStage).toFixed(2) : 
+                                    Math.pow(1.25, gameState.speedBoostStage).toFixed(2);
+                                
+                                console.log(`Speed boost stage ${gameState.speedBoostStage}: Ball is now ${totalBoost}x original speed (+${boostPercentage}% per stage)`);
+                            }
+                            
+                            resetBall();
                         }
                         
-                        // Only apply if this is a new boost stage
-                        if (newBoostStage > gameState.speedBoostStage) {
-                            gameState.speedBoostStage = newBoostStage;
-                            console.log(`Speed boost stage ${newBoostStage}: Ball is now ${Math.pow(1.25, newBoostStage).toFixed(2)}x original speed`);
-                        }
-                        
-                        resetBall();
                         break;
                     }
                 }
