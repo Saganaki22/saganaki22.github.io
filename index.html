@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drbaph | Creative Coding Gallery</title>
+    <meta name="description" content="Explore a mesmerizing collection of generative art, interactive apps, and algorithmic designs. Where code meets creativity and art.">
+
+    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+
+  
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon/android-chrome-512x512.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Drbaph | Creative Coding Galler">
+    <meta property="og:description" content="Explore a mesmerizing collection of generative art, interactive apps, and algorithmic designs. Where code meets creativity and art.">
+    <meta property="og:image" content="https://i.ibb.co/xS831xRK/og.jpg">
+    <meta property="og:url" content="https://saganaki22.github.io/">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="EZ Piano | Interactive Virtual Piano">
+    <meta name="twitter:description" content="Explore a mesmerizing collection of generative art, interactive apps, and algorithmic designs. Where code meets creativity and art.">
+    <meta name="twitter:image" content="https://i.ibb.co/xS831xRK/og.jpg">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00c8ff;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #particles-canvas, #wave-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #wave-canvas {
+            opacity: 0.3;
+        }
+
+        #particles-canvas {
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--accent-color), #ff00aa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 50px;
+            background-color: var(--accent-color);
+            margin-left: 5px;
+            animation: cursor-blink 1s infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes cursor-blink {
+            0%, 49% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-image img {
+            opacity: 0;
+        }
+
+        .card:hover .card-video {
+            opacity: 1;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title-text {
+            margin-right: auto;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .site-links {
+            margin-bottom: 2rem;
+        }
+
+        .site-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .site-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .site-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .site-links a:hover::after {
+            width: 100%;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-icons a {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent-color);
+            transform: translateY(-5px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Demo button styles */
+        .demo-btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 200, 255, 0.4);
+            background-color: #00d9ff;
+        }
+
+        .repo-btn {
+            display: inline-block;
+            background-color: rgba(0, 200, 255, 0.15);
+            color: var(--accent-color);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid var(--accent-color);
+            cursor: pointer;
+        }
+
+        .repo-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 200, 255, 0.2);
+            background-color: rgba(0, 200, 255, 0.25);
+        }
+
+        /* Pong game styles */
+        .pong-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: none;
+            pointer-events: none;
+        }
+
+        .pong-paddle {
+            position: absolute;
+            width: 15px;
+            height: 120px;
+            background-color: white;
+            border-radius: 8px;
+            z-index: 10000;
+            transition: box-shadow 0.1s ease-in-out;
+        }
+
+        .paddle-glow {
+            box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.7);
+        }
+
+        .pong-paddle-left {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .pong-paddle-right {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .pong-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+
+        .ball-tracer {
+            position: absolute;
+            border-radius: 50%;
+            background-color: white;
+            z-index: 9999;
+            opacity: 0.6;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .pong-score {
+            position: fixed;
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.3);
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        .pong-score-left {
+            top: 30px;
+            left: 30px;
+        }
+
+        .pong-score-right {
+            top: 30px;
+            right: 30px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .site-links a {
+                display: block;
+                margin: 0.7rem 0;
+            }
+
+            .social-icons {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="wave-canvas"></canvas>
+
+    <!-- Pong Game Elements -->
+    <div class="pong-container" id="pong-container">
+        <div class="pong-paddle pong-paddle-left" id="pong-paddle-left"></div>
+        <div class="pong-paddle pong-paddle-right" id="pong-paddle-right"></div>
+        <div class="pong-ball" id="pong-ball"></div>
+        <div class="pong-score pong-score-left" id="pong-score-left">0</div>
+        <div class="pong-score pong-score-right" id="pong-score-right">0</div>
+        <!-- Ball tracers will be added dynamically -->
+        <!-- Sound effects -->
+        <audio id="paddle-hit-sound" preload="auto">
+            <source src="https://assets.mixkit.co/active_storage/sfx/3005/3005-preview.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 id="typing-title"></h1><span class="cursor"></span>
+            <p class="subtitle">Exploring the fusion of technology, art, and mathematics through creative coding, interactive projects, and dynamic visualizations.</p>
+        </header>
+
+        <div class="card-grid">
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/wf1.png" alt="Shapes">
+                    <video class="card-video" muted loop>
+                        <source src="vid/shapes1.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Shapes</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Drbaph_shapes" class="repo-btn">code</a>
+                            <a href="https://app.drbaph.com/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">An interactive web-based 3D shape visualization tool that renders various geometric shapes in a wireframe style with a dynamic matrix background effect.</p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/wf6.jpg" alt=".Matrix">
+                    <video class="card-video" muted loop>
+                        <source src="vid/dot_matrix.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Dot Matrix</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/.matrix" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/.matrix/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description"> Transform images and videos into stunning dot-matrix art with this vanilla JavaScript web app. Features real-time preview, customizable effects, and video processing.</p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/wf5.jpg" alt="Synthrain">
+                    <video class="card-video" muted loop>
+                        <source src="vid/synthrain.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Synthrain</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/SynthRain" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/SynthRain/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">Simulating complex particle interactions in a visually appealing and scientifically accurate environment.</p>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/wf4.jpg" alt="Swarm">
+                    <video class="card-video" muted loop>
+                        <source src="vid/swarm1.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Swarm</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Swarm" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/Swarm/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">An interactive pointer swarm simulation where a mesmerizing group of pointers follows your cursor, creating dynamic and chaotic patterns.</p>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/wf8.jpg" alt="NeonOracle">
+                    <video class="card-video" muted loop>
+                        <source src="vid/neonoracle.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Neon Oracle</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/NeonOracle" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/NeonOracle/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A 3D fractal visualization tool for exploring the beauty and complexity of Mandelbulb fractals.</p>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/wf7.jpg" alt="Project 6">
+                    <video class="card-video" muted loop>
+                        <source src="vid/aetherstrum.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Aetherstrum</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/AetherStrum" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/AetherStrum/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">An ethereal musical instrument that combines visual art with sound synthesis. Create mesmerizing music by interacting with vibrating strings in a beautiful, particle-rich environment.</p>
+                </div>
+            </div>
+
+            <!-- Card 7 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/lofilamp.jpg" alt="Project 7">
+                    <video class="card-video" muted loop>
+                        <source src="vid/lofilamp.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">LofiLamp</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/LofiLamp" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/LofiLamp/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">An interactive Lofi lava lamp visualization with customizable colors, controls, and lofi music. Perfect for relaxation and focus during work or study sessions.</p>
+                </div>
+            </div>
+
+            <!-- Card 8 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/Ezpiano.jpg" alt="Project 8">
+                    <video class="card-video" muted loop>
+                        <source src="vid/ezpiano.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">EZ Piano</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/EZPiano" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/EZPiano/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A beautiful and feature-rich virtual piano with learning mode, multiple songs, and advanced sound options.</p>
+                </div>
+            </div>
+
+            <!-- Card 9 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/greentendo.png" alt="Project 9">
+                    <video class="card-video" muted loop>
+                        <source src="vid/greentendo.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Greentendo</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Greentendo/" class="repo-btn">code</a>
+                            <a href="https://saganaki22.github.io/Greentendo/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A nostalgic Game Boy simulator featuring classic games like Snake, Pong, Tetris, Space Invaders, and more, built with vanilla JavaScript and styled with modern CSS.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="site-links">
+                <a href="https://drbaph.dev" target="_blank">drbaph.dev</a>
+                <a href="https://drbaph.com" target="_blank">drbaph.com</a>
+                <a href="https://mandelbulb.xyz" target="_blank">mandelbulb.xyz</a>
+                <a href="https://fractalize.xyz" target="_blank">fractalize.xyz</a>
+            </div>
+
+            <div class="social-icons">
+                <a href="https://x.com/drbaph" target="_blank" aria-label="X / Twitter">
+                    <i class="ph ph-x-logo"></i>
+                </a>
+                <a href="https://www.instagram.com/drbaph" target="_blank" aria-label="Instagram">
+                    <i class="ph ph-instagram-logo"></i>
+                </a>
+                <a href="https://t.me/drbaph" target="_blank" aria-label="Telegram">
+                    <i class="ph ph-telegram-logo"></i>
+                </a>
+                <a href="https://github.com/Saganaki22" target="_blank" aria-label="GitHub">
+                    <i class="ph ph-github-logo"></i>
+                </a>
+                <a href="https://huggingface.co/drbaph" target="_blank" aria-label="HuggingFace">
+                    <i class="ph ph-smiley"></i>
+                </a>
+                <a href="https://matrix.to/#/@drbaph:matrix.org" target="_blank" aria-label="Matrix">
+                    <i class="ph-bold ph-chats"></i>
+                </a>
+            </div>
+
+            <p class="copyright">© 2025 DrBaph. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Console developer signature
+        console.log('%c designed by @drbaph ', 'background: #121212; color: #00FF66; font-size: 16px; font-weight: bold; padding: 5px 10px; border-radius: 5px; border-left: 4px solid #00c8ff;');
+        
+        // Console typing animation
+        (function() {
+            const titleElement = document.getElementById('typing-title');
+            const titles = ["drbaph.is-a.dev", "Saganaki22.github.io"];
+            let currentTitleIndex = 0;
+            let currentCharIndex = 0;
+            let isDeleting = false;
+            let typingSpeed = 150; // Base typing speed in ms
+            
+            function typeText() {
+                const currentTitle = titles[currentTitleIndex];
+                
+                // If deleting, remove a character
+                if (isDeleting) {
+                    titleElement.textContent = currentTitle.substring(0, currentCharIndex - 1);
+                    currentCharIndex--;
+                } else {
+                    // If typing, add a character
+                    titleElement.textContent = currentTitle.substring(0, currentCharIndex + 1);
+                    currentCharIndex++;
+                }
+                
+                // Determine typing speed - faster when deleting
+                let speed = isDeleting ? typingSpeed / 2 : typingSpeed;
+                
+                // Randomize typing speed slightly to make it more human-like
+                speed = speed + Math.random() * 50 - 25;
+                
+                // Handle text completion or deletion completion
+                if (!isDeleting && currentCharIndex === currentTitle.length) {
+                    // Finished typing a word
+                    speed = 10000; // Wait 10 seconds before deleting
+                    isDeleting = true;
+                } else if (isDeleting && currentCharIndex === 0) {
+                    // Finished deleting a word
+                    isDeleting = false;
+                    currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+                }
+                
+                setTimeout(typeText, speed);
+            }
+            
+            // Start the typing animation
+            typeText();
+        })();
+        
+        // Particle animation
+        (function() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let particles = [];
+            const particleCount = 100;
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 2 + 1,
+                        speed: Math.random() * 1 + 0.2,
+                        direction: Math.random() * Math.PI * 2,
+                        color: `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 255)}, 0.7)`
+                    });
+                }
+            }
+            
+            function drawParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color;
+                    ctx.fill();
+                    
+                    // Update position
+                    particle.x += Math.cos(particle.direction) * particle.speed;
+                    particle.y += Math.sin(particle.direction) * particle.speed;
+                    
+                    // Bounce off edges
+                    if (particle.x < 0 || particle.x > canvas.width) {
+                        particle.direction = Math.PI - particle.direction;
+                    }
+                    if (particle.y < 0 || particle.y > canvas.height) {
+                        particle.direction = -particle.direction;
+                    }
+                    
+                    // Draw connections
+                    particles.forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(otherParticle.x, otherParticle.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 - distance / 1000})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                requestAnimationFrame(drawParticles);
+            }
+            
+            window.addEventListener('resize', function() {
+                resizeCanvas();
+                initParticles();
+            });
+            
+            resizeCanvas();
+            initParticles();
+            drawParticles();
+        })();
+        
+        // Sin wave animation
+        (function() {
+            const canvas = document.getElementById('wave-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let time = 0;
+            const waves = 3;
+            const waveColors = [
+                'rgba(0, 200, 255, 0.3)',
+                'rgba(255, 0, 170, 0.2)',
+                'rgba(100, 100, 255, 0.2)'
+            ];
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            function drawWaves() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                time += 0.01;
+                
+                for (let w = 0; w < waves; w++) {
+                    ctx.beginPath();
+                    
+                    // Different parameters for each wave
+                    const amplitude = 50 + w * 20; // Height of wave
+                    const period = 0.01 - w * 0.002; // How many waves
+                    const phaseShift = time * (0.5 + w * 0.2); // Wave movement speed
+                    
+                    // Start at the left side, slightly off-canvas
+                    ctx.moveTo(0, canvas.height / 2 + Math.sin(phaseShift) * amplitude);
+                    
+                    // Draw the wave across the screen
+                    for (let x = 0; x < canvas.width; x += 5) {
+                        const y = canvas.height / 2 + 
+                                 Math.sin(x * period + phaseShift) * amplitude;
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    ctx.strokeStyle = waveColors[w];
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                requestAnimationFrame(drawWaves);
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            
+            resizeCanvas();
+            drawWaves();
+        })();
+        
+        // Pong Game
+        (function() {
+            // Inactivity timer
+            let inactivityTimer;
+            let inactivityDelay = 25000; // 25 seconds
+            let pongActive = false;
+            let gameStarted = false;
+            
+            // Game elements
+            const pongContainer = document.getElementById('pong-container');
+            const leftPaddle = document.getElementById('pong-paddle-left');
+            const rightPaddle = document.getElementById('pong-paddle-right');
+            const ball = document.getElementById('pong-ball');
+            const leftScore = document.getElementById('pong-score-left');
+            const rightScore = document.getElementById('pong-score-right');
+            
+            // Sound elements
+            const paddleHitSound = document.getElementById('paddle-hit-sound');
+            paddleHitSound.volume = 0.25; // Reduced from 0.5 to 0.25 (25% of original volume)
+            
+            // Sound cooldowns to prevent too many sounds at once
+            let paddleSoundCooldown = false;
+            
+            // Function to play sounds with cooldown
+            function playPaddleHitSound() {
+                if (!paddleSoundCooldown) {
+                    paddleHitSound.currentTime = 0;
+                    paddleHitSound.play();
+                    paddleSoundCooldown = true;
+                    setTimeout(() => { paddleSoundCooldown = false; }, 100);
+                }
+            }
+            
+            // Tracer elements
+            const tracerCount = 5;
+            const tracers = [];
+            
+            // Create tracer elements
+            for (let i = 0; i < tracerCount; i++) {
+                const tracer = document.createElement('div');
+                tracer.className = 'ball-tracer';
+                pongContainer.appendChild(tracer);
+                tracers.push(tracer);
+            }
+            
+            // Previous ball positions for tracer effect
+            const ballPositions = [];
+            
+            // Game state
+            let gameState = {
+                ballX: window.innerWidth / 2,
+                ballY: window.innerHeight / 2,
+                ballSpeedX: 6.25, // Increased from 5 to 6.25 (25% faster)
+                ballSpeedY: 2.5, // Increased from 2 to 2.5 (25% faster)
+                paddleSpeed: 5,
+                leftPaddleY: window.innerHeight / 2 - 60,
+                rightPaddleY: window.innerHeight / 2 - 60,
+                leftPoints: 0,
+                rightPoints: 0,
+                paddleHeight: 120,
+                paddleWidth: 15,
+                ballSize: 20,
+                cpuAccuracy: 0.5, // Initial CPU accuracy (50%)
+                cpuSkillIncrease: 0.1, // Amount to increase skill by after player scores 5
+                cpuDifficultyStage: 0, // Tracks how many times difficulty has increased
+                lastBallX: window.innerWidth / 2, // Store previous ball position for better collision
+                lastBallY: window.innerHeight / 2,  // Store previous ball position for better collision
+                subSteps: 12, // Increased from 8 to 12 for more precise collision detection
+                userPaddleExtraWidth: 12, // Increased from 8 to 12
+                speedBoostApplied: false, // Track if first speed boost has been applied
+                secondSpeedBoostApplied: false, // Track if second speed boost has been applied
+                originalBallSpeed: 6.25 // Updated from 5 to 6.25 (25% faster)
+            };
+            
+            // Game loop variables
+            let animationFrame;
+            
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                
+                // Only stop pong if it's not yet started or we're clicking something substantive
+                if (pongActive && !gameStarted) {
+                    stopPong();
+                }
+                
+                inactivityTimer = setTimeout(() => {
+                    startPong();
+                }, inactivityDelay);
+            }
+            
+            function startPong() {
+                pongActive = true;
+                gameStarted = true;
+                pongContainer.style.display = 'block';
+                resetBall();
+                gameLoop();
+            }
+            
+            function stopPong() {
+                pongActive = false;
+                gameStarted = false;
+                pongContainer.style.display = 'none';
+                cancelAnimationFrame(animationFrame);
+                
+                // Reset scores
+                gameState.leftPoints = 0;
+                gameState.rightPoints = 0;
+                leftScore.textContent = '0';
+                rightScore.textContent = '0';
+            }
+            
+            function resetBall() {
+                gameState.ballX = window.innerWidth / 2;
+                gameState.ballY = window.innerHeight / 2;
+                gameState.lastBallX = gameState.ballX;
+                gameState.lastBallY = gameState.ballY;
+                
+                // Set the base speed based on speed boosts applied
+                let baseSpeed = 6.25; // Default speed (increased from 5 to 6.25)
+                if (gameState.secondSpeedBoostApplied) {
+                    // Second boost: +20% on top of first boost (which was +25%)
+                    // Total: 1.25 * 1.20 = 1.5 (50% faster)
+                    baseSpeed = gameState.originalBallSpeed * 1.2;
+                } else if (gameState.speedBoostApplied) {
+                    // First boost: +25%
+                    baseSpeed = gameState.originalBallSpeed;
+                }
+                
+                // Set random direction but with consistent speed
+                gameState.ballSpeedX = Math.random() > 0.5 ? baseSpeed : -baseSpeed;
+                
+                // Set Y speed with appropriate scaling for boosts
+                let ySpeedFactor = 1;
+                if (gameState.secondSpeedBoostApplied) {
+                    ySpeedFactor = 1.5; // 50% faster at second boost
+                } else if (gameState.speedBoostApplied) {
+                    ySpeedFactor = 1.25; // 25% faster at first boost
+                }
+                
+                gameState.ballSpeedY = (Math.random() * 5 - 2.5) * ySpeedFactor; // Increased range from 4/-2 to 5/-2.5
+                
+                // Reset ball position history
+                ballPositions.length = 0;
+            }
+            
+            // Helper function to check if ball collides with a paddle
+            function checkPaddleCollision(x, y, paddleX, paddleY, paddleWidth, paddleHeight) {
+                return (
+                    x - gameState.ballSize/2 <= paddleX + paddleWidth &&
+                    x + gameState.ballSize/2 >= paddleX &&
+                    y >= paddleY &&
+                    y <= paddleY + paddleHeight
+                );
+            }
+            
+            // Special function for user paddle with expanded hitbox
+            function checkUserPaddleCollision(x, y, lastX, lastY, paddleX, paddleY, paddleWidth, paddleHeight) {
+                // Regular collision
+                const normalCollision = checkPaddleCollision(x, y, paddleX, paddleY, paddleWidth, paddleHeight);
+                
+                // Check if ball has "tunneled" through the paddle between frames
+                const ballWasInFrontOfPaddle = lastX < paddleX + paddleWidth/2; // Changed to half paddle width
+                const ballIsAfterPaddle = x > paddleX + paddleWidth;
+                const tunnelY = y >= paddleY - gameState.ballSize && y <= paddleY + paddleHeight + gameState.ballSize;
+                const tunneled = ballWasInFrontOfPaddle && ballIsAfterPaddle && tunnelY;
+                
+                // Extra buffer for right side boundary - make hitbox even bigger
+                const extendedCollision = checkPaddleCollision(
+                    x, y,
+                    paddleX - gameState.userPaddleExtraWidth, // Extend paddle hitbox to left
+                    paddleY - gameState.ballSize, // Extend paddle hitbox up
+                    paddleWidth + gameState.userPaddleExtraWidth * 2, // Widen the hitbox
+                    paddleHeight + gameState.ballSize * 2 // Extend paddle hitbox down more
+                );
+                
+                // Enhanced line intersection test - check if the ball's path crosses the paddle
+                let lineIntersection = false;
+                
+                // Check for path intersection even when ball is moving very fast
+                const dx = x - lastX;
+                const dy = y - lastY;
+                
+                // Only perform checks if the ball has moved a significant distance
+                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                    // Check for intersection with left edge of paddle
+                    const leftEdgeX = paddleX;
+                    
+                    // Parametric equation parameter for line intersection
+                    const t = (leftEdgeX - lastX) / (x - lastX);
+                    
+                    // Check if intersection point is within the current frame's movement
+                    if (t >= 0 && t <= 1) {
+                        // Calculate Y position at intersection
+                        const intersectionY = lastY + t * (y - lastY);
+                        
+                        // Check if intersection is within paddle height (with buffer)
+                        if (intersectionY >= paddleY - gameState.ballSize/2 && 
+                            intersectionY <= paddleY + paddleHeight + gameState.ballSize/2) {
+                            lineIntersection = true;
+                        }
+                    }
+                }
+                
+                return normalCollision || tunneled || extendedCollision || lineIntersection;
+            }
+            
+            function gameLoop() {
+                if (!pongActive) return;
+                
+                // Store previous position for tracer and collision detection
+                gameState.lastBallX = gameState.ballX;
+                gameState.lastBallY = gameState.ballY;
+                
+                // Add current position to history for tracer
+                ballPositions.unshift({x: gameState.ballX, y: gameState.ballY});
+                
+                // Limit the history size
+                if (ballPositions.length > tracerCount) {
+                    ballPositions.pop();
+                }
+                
+                // Update tracer elements
+                tracers.forEach((tracer, index) => {
+                    if (index < ballPositions.length) {
+                        const pos = ballPositions[index];
+                        tracer.style.left = pos.x + 'px';
+                        tracer.style.top = pos.y + 'px';
+                        tracer.style.width = (gameState.ballSize - index * 2) + 'px';
+                        tracer.style.height = (gameState.ballSize - index * 2) + 'px';
+                        tracer.style.opacity = (0.6 - index * 0.1);
+                    } else {
+                        tracer.style.opacity = '0';
+                    }
+                });
+                
+                // Sub-stepping for better collision detection (prevents tunneling)
+                const subStepX = gameState.ballSpeedX / gameState.subSteps;
+                const subStepY = gameState.ballSpeedY / gameState.subSteps;
+                
+                // Temporary variables to check if a collision happened during any sub-step
+                let hadWallCollision = false;
+                let hadPaddleCollision = false;
+                
+                // Track last clean position before any collision
+                let lastCleanX = gameState.lastBallX;
+                let lastCleanY = gameState.lastBallY;
+                
+                for (let step = 0; step < gameState.subSteps; step++) {
+                    // Update ball position for this sub-step
+                    gameState.ballX += subStepX;
+                    gameState.ballY += subStepY;
+                    
+                    // Ball collision with top and bottom walls
+                    if (gameState.ballY <= gameState.ballSize/2 || gameState.ballY >= window.innerHeight - gameState.ballSize/2) {
+                        // Calculate current ball velocity vector
+                        const currentSpeed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
+                        
+                        // Store the sign of Y velocity before changing it
+                        const ySign = Math.sign(gameState.ballSpeedY);
+                        
+                        // Reverse Y direction - multiply by -1 to ensure proper reversal
+                        gameState.ballSpeedY = -gameState.ballSpeedY;
+                        
+                        // Ensure Y velocity isn't too small (prevents horizontal movement)
+                        if (Math.abs(gameState.ballSpeedY) < 0.5) {
+                            // If Y velocity is too small, give it a minimum value
+                            gameState.ballSpeedY = ySign * -1 * Math.max(1, currentSpeed * 0.3);
+                        }
+                        
+                        // Ensure the ball doesn't get stuck in the wall
+                        if (gameState.ballY <= gameState.ballSize/2) {
+                            gameState.ballY = gameState.ballSize/2 + 2; // Increased push out distance
+                        } else if (gameState.ballY >= window.innerHeight - gameState.ballSize/2) {
+                            gameState.ballY = window.innerHeight - gameState.ballSize/2 - 2; // Increased push out distance
+                        }
+                        
+                        // Add slight randomness to prevent predictable patterns (reduced amount)
+                        gameState.ballSpeedX += (Math.random() - 0.5) * 0.3;
+                        
+                        hadWallCollision = true;
+                    }
+                    
+                    // Left paddle collision with expanded hitbox
+                    const leftPaddleX = 20;
+                    if (checkPaddleCollision(
+                        gameState.ballX, 
+                        gameState.ballY, 
+                        leftPaddleX, 
+                        gameState.leftPaddleY, 
+                        gameState.paddleWidth,
+                        gameState.paddleHeight
+                    )) {
+                        // Only bounce if moving toward the paddle
+                        if (gameState.ballSpeedX < 0) {
+                            // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
+                            const relativeImpact = (gameState.ballY - gameState.leftPaddleY) / gameState.paddleHeight;
+                            
+                            // Angle calculation: -45 to 45 degrees based on where it hits
+                            const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
+                            
+                            // Ball speed after collision - maintain total speed but change direction
+                            const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
+                            
+                            // Reverse X direction and adjust Y based on impact point
+                            gameState.ballSpeedX = Math.abs(speed * Math.cos(bounceAngle));
+                            gameState.ballSpeedY = speed * Math.sin(bounceAngle);
+                            
+                            // Ensure ball is outside the paddle
+                            gameState.ballX = leftPaddleX + gameState.paddleWidth + gameState.ballSize/2 + 1;
+                            
+                            hadPaddleCollision = true;
+                            
+                            // Break out of the sub-steps after collision
+                            break;
+                        }
+                    }
+                    
+                    // Right paddle (user paddle) collision with ultra-robust detection
+                    const rightPaddleX = window.innerWidth - 20 - gameState.paddleWidth;
+                    
+                    // Use the enhanced user paddle collision detection with even more aggressive parameters
+                    if (checkUserPaddleCollision(
+                        gameState.ballX, 
+                        gameState.ballY,
+                        lastCleanX,
+                        lastCleanY,
+                        rightPaddleX, 
+                        gameState.rightPaddleY, 
+                        gameState.paddleWidth,
+                        gameState.paddleHeight
+                    )) {
+                        // Only bounce if moving toward the paddle or if tunneled through
+                        if (gameState.ballSpeedX > 0 || gameState.ballX > rightPaddleX + gameState.paddleWidth) {
+                            // Calculate relative impact position (0 = top of paddle, 1 = bottom of paddle)
+                            const relativeImpact = (gameState.ballY - gameState.rightPaddleY) / gameState.paddleHeight;
+                            
+                            // Angle calculation: -45 to 45 degrees based on where it hits
+                            const bounceAngle = (relativeImpact - 0.5) * Math.PI / 2;
+                            
+                            // Ball speed after collision - maintain total speed but change direction
+                            const speed = Math.sqrt(gameState.ballSpeedX * gameState.ballSpeedX + gameState.ballSpeedY * gameState.ballSpeedY);
+                            
+                            // Reverse X direction and adjust Y based on impact point
+                            gameState.ballSpeedX = -Math.abs(speed * Math.cos(bounceAngle));
+                            gameState.ballSpeedY = speed * Math.sin(bounceAngle);
+                            
+                            // Always ensure ball is outside the paddle, even if it tunneled through
+                            gameState.ballX = rightPaddleX - gameState.ballSize/2 - 1;
+                            
+                            hadPaddleCollision = true;
+                            
+                            // Break out of the sub-steps after collision
+                            break;
+                        }
+                    }
+                    
+                    // Update last clean position if no collision happened
+                    lastCleanX = gameState.ballX;
+                    lastCleanY = gameState.ballY;
+                    
+                    // Check for scoring in each sub-step
+                    if (gameState.ballX <= 0) {
+                        gameState.rightPoints++;
+                        rightScore.textContent = gameState.rightPoints;
+                        
+                        // Add glow effect to right paddle (player's paddle)
+                        rightPaddle.classList.add('paddle-glow');
+                        setTimeout(() => {
+                            rightPaddle.classList.remove('paddle-glow');
+                        }, 1000);
+                        
+                        // Increase CPU difficulty after player scores 5 points
+                        if (gameState.rightPoints >= 5 && gameState.cpuDifficultyStage < 5) {
+                            gameState.cpuAccuracy = Math.min(0.5 + ((gameState.rightPoints - 4) * gameState.cpuSkillIncrease), 1.0);
+                            gameState.cpuDifficultyStage++;
+                        }
+                        
+                        // Apply first speed boost after 5 goals by either player
+                        if (!gameState.speedBoostApplied && (gameState.rightPoints >= 5 || gameState.leftPoints >= 5)) {
+                            // Increase ball speed by 25%
+                            const speedMultiplier = 1.25;
+                            gameState.originalBallSpeed *= speedMultiplier;
+                            gameState.speedBoostApplied = true;
+                        }
+                        
+                        // Apply second speed boost after 8 goals by either player
+                        if (gameState.speedBoostApplied && !gameState.secondSpeedBoostApplied && 
+                            (gameState.rightPoints >= 8 || gameState.leftPoints >= 8)) {
+                            // Increase ball speed by another 20%
+                            gameState.secondSpeedBoostApplied = true;
+                        }
+                        
+                        resetBall();
+                        break;
+                    }
+                    
+                    if (gameState.ballX >= window.innerWidth) {
+                        gameState.leftPoints++;
+                        leftScore.textContent = gameState.leftPoints;
+                        
+                        // Add glow effect to left paddle (CPU's paddle)
+                        leftPaddle.classList.add('paddle-glow');
+                        setTimeout(() => {
+                            leftPaddle.classList.remove('paddle-glow');
+                        }, 1000);
+                        
+                        // Apply first speed boost after 5 goals by either player
+                        if (!gameState.speedBoostApplied && (gameState.rightPoints >= 5 || gameState.leftPoints >= 5)) {
+                            // Increase ball speed by 25%
+                            const speedMultiplier = 1.25;
+                            gameState.originalBallSpeed *= speedMultiplier;
+                            gameState.speedBoostApplied = true;
+                        }
+                        
+                        // Apply second speed boost after 8 goals by either player
+                        if (gameState.speedBoostApplied && !gameState.secondSpeedBoostApplied && 
+                            (gameState.rightPoints >= 8 || gameState.leftPoints >= 8)) {
+                            // Increase ball speed by another 20%
+                            gameState.secondSpeedBoostApplied = true;
+                        }
+                        
+                        resetBall();
+                        break;
+                    }
+                }
+                
+                // Play sounds based on collision results
+                if (hadPaddleCollision) {
+                    playPaddleHitSound();
+                }
+                
+                // CPU AI (left paddle) with variable accuracy
+                const shouldTrackBall = Math.random() < gameState.cpuAccuracy;
+                
+                if (shouldTrackBall && gameState.ballSpeedX < 0) { // Only track when ball is moving toward CPU
+                    const paddleCenter = gameState.leftPaddleY + gameState.paddleHeight/2;
+                    const targetY = gameState.ballY;
+                    
+                    if (paddleCenter < targetY - 15) {
+                        gameState.leftPaddleY += gameState.paddleSpeed;
+                    } else if (paddleCenter > targetY + 15) {
+                        gameState.leftPaddleY -= gameState.paddleSpeed;
+                    }
+                } else {
+                    // Add slight random movement when not tracking to make it look more natural
+                    if (Math.random() > 0.95) {
+                        gameState.leftPaddleY += (Math.random() - 0.5) * gameState.paddleSpeed * 2;
+                    }
+                }
+                
+                // Keep paddles within bounds
+                gameState.leftPaddleY = Math.max(0, Math.min(window.innerHeight - gameState.paddleHeight, gameState.leftPaddleY));
+                gameState.rightPaddleY = Math.max(0, Math.min(window.innerHeight - gameState.paddleHeight, gameState.rightPaddleY));
+                
+                // Update DOM elements
+                ball.style.left = gameState.ballX + 'px';
+                ball.style.top = gameState.ballY + 'px';
+                leftPaddle.style.top = gameState.leftPaddleY + 'px';
+                rightPaddle.style.top = gameState.rightPaddleY + 'px';
+                
+                animationFrame = requestAnimationFrame(gameLoop);
+            }
+            
+            // Mouse movement to control right paddle
+            document.addEventListener('mousemove', (e) => {
+                // Reset timer only if game hasn't started yet
+                if (!gameStarted) {
+                    resetInactivityTimer();
+                }
+                
+                if (pongActive) {
+                    gameState.rightPaddleY = e.clientY - gameState.paddleHeight/2; // Center paddle on mouse
+                }
+            });
+            
+            // Substantive interactions should reset timer and potentially stop game
+            const substantiveEvents = ['click', 'keydown', 'touchstart'];
+            substantiveEvents.forEach(event => {
+                document.addEventListener(event, () => {
+                    // Clicking anywhere once game has started will stop it
+                    if (gameStarted) {
+                        stopPong();
+                    }
+                    resetInactivityTimer();
+                });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (pongActive) {
+                    resetBall();
+                }
+            });
+            
+            // Start inactivity timer
+            resetInactivityTimer();
+        })();
+        
+        // Card video playback
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const video = card.querySelector('.card-video');
+                if (video) {
+                    video.play();
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                const video = card.querySelector('.card-video');
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
