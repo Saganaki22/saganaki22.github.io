@@ -137,6 +137,11 @@
             margin: 4rem 0;
         }
 
+        /* Center the last card when it's alone in a row */
+        .card-grid > .card:last-child:nth-child(3n-2) {
+            grid-column: 2;
+        }
+
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
@@ -184,6 +189,16 @@
 
         .card:hover .card-video {
             opacity: 1;
+        }
+
+        /* Cards without videos shouldn't hide their images on hover */
+        .card:nth-child(n+10) .card-image img {
+            transition: transform 0.3s ease;
+        }
+
+        .card:nth-child(n+10):hover .card-image img {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         .card-content {
@@ -679,6 +694,227 @@
                         </div>
                     </h3>
                     <p class="card-description">A nostalgic Game Boy simulator featuring classic games like Snake, Pong, Tetris, Space Invaders, and more, built with vanilla JavaScript and styled with modern CSS.</p>
+                </div>
+            </div>
+
+            <!-- Card 10 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/qkqr.jpg" alt="QKQR">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">QKQR</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/QKQR" class="repo-btn">Code</a>
+                            <a href="http://drbaph.is-a.dev/QKQR/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A fast, user-friendly QR code generator web application that allows users to create customizable QR codes for various purposes such as URLs, text, contact information, Wi-Fi credentials, and geographical locations.</p>
+                </div>
+            </div>
+
+            <!-- Card 11 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/blackjack.jpg" alt="Blackjack">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Blackjack</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Blackjack" class="repo-btn">Code</a>
+                            <a href="http://drbaph.is-a.dev/Blackjack/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A modern, interactive BlackJack game with a sleek casino-inspired interface. Play the classic card game against the dealer with realistic animations and intuitive touch controls.</p>
+                </div>
+            </div>
+
+            <!-- Card 12 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/ascii.jpg" alt="ASCII">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">ASCII</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/ASCII" class="repo-btn">Code</a>
+                            <a href="https://drbaph.is-a.dev/ASCII/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A modern, responsive web application for generating ASCII art from images with advanced customization options.</p>
+                </div>
+            </div>
+
+            <!-- Card 13 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/glitch.jpg" alt="Glitch">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Glitch</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Glitch" class="repo-btn">Code</a>
+                            <a href="https://glitch22.vercel.app/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A web-based image glitch art generator that allows you to create unique visual effects and distortions for your images.</p>
+                </div>
+            </div>
+
+            <!-- Card 14 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/plinksy.jpg" alt="Plinksy">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Plinksy</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Plinksy" class="repo-btn">Code</a>
+                            <a href="http://drbaph.is-a.dev/Plinksy/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A modern, engaging virtual betting game inspired by Plinko, built with pure JavaScript and advanced CSS animations. Experience the thrill of watching your bets cascade through a mesmerizing field of pegs to multiply your winnings potentially!</p>
+                </div>
+            </div>
+
+            <!-- Card 15 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/clarity.jpg" alt="Clarity">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Clarity</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Clarity" class="repo-btn">Code</a>
+                            <a href="https://clarityapp.vercel.app/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">Clarity is a modern, open-source note-taking and workspace application inspired by Notion. It provides a clean and intuitive interface for organizing your thoughts, notes, and projects.</p>
+                </div>
+            </div>
+
+            <!-- Card 16 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/grids.jpg" alt="Grids">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Grids</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Grids" class="repo-btn">Code</a>
+                            <a href="http://drbaph.is-a.dev/Grids/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A creative photo effect generator that transforms your images with grid-based visual effects in the browser.</p>
+                </div>
+            </div>
+
+            <!-- Card 17 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/periodictable.jpg" alt="Periodic Table">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Periodic Table</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/PeriodicTable" class="repo-btn">Code</a>
+                            <a href="https://ptable-drbaph.vercel.app/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A modern, interactive 3D periodic table of elements built with Next.js, Three.js, and TypeScript. Explore chemical elements in an immersive 3D environment with detailed information, properties, and visualizations.</p>
+                </div>
+            </div>
+
+            <!-- Card 18 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/prodrum.jpg" alt="ProDrum">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">ProDrum</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/ProDrum" class="repo-btn">Code</a>
+                            <a href="https://prodrum.vercel.app/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A web-based drum machine and beat sequencer with customizable kits and sample recording capabilities.</p>
+                </div>
+            </div>
+
+            <!-- Card 19 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/xylorimba.jpg" alt="XyloRimba">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">XyloRimba</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/XyloRimba" class="repo-btn">Code</a>
+                            <a href="http://drbaph.is-a.dev/XyloRimba/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A beautiful, interactive virtual Xylophone and Marimba simulator that runs in your web browser. Play music, record your tunes, and even listen to the classic Tetris theme!</p>
+                </div>
+            </div>
+
+            <!-- Card 20 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/hash-ii.jpg" alt="Hash-II">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Hash-II</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Hash-II" class="repo-btn">Code</a>
+                            <a href="https://hash-ii.vercel.app/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A modern, secure Base64 & AES-256 encoder/decoder. Educating users about encryption while providing practical cryptographic tools.</p>
+                </div>
+            </div>
+
+            <!-- Card 21 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/dither.jpg" alt="Dither">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">Dither</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/Dither" class="repo-btn">Code</a>
+                            <a href="https://dither-drbaph.vercel.app/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">A modern web-based image dithering tool. Apply various dithering techniques to your images directly in the browser with real-time preview.</p>
+                </div>
+            </div>
+
+            <!-- Card 22 -->
+            <div class="card">
+                <div class="card-image">
+                    <img src="img/proceduralgen.jpg" alt="ProceduralGen">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <span class="card-title-text">ProceduralGen</span>
+                        <div class="card-buttons">
+                            <a href="https://github.com/Saganaki22/ProceduralGen" class="repo-btn">Code</a>
+                            <a href="https://drbaph.is-a.dev/ProceduralGen/" class="demo-btn">DEMO</a>
+                        </div>
+                    </h3>
+                    <p class="card-description">An interactive web application for creating beautiful algorithmic artwork through various procedural generation algorithms.</p>
                 </div>
             </div>
         </div>
