@@ -46,6 +46,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap for all elements */
+            -webkit-touch-callout: none; /* Prevent callout to copy image, etc when tap to hold */
         }
 
         body {
@@ -54,6 +55,8 @@
             overflow-x: hidden;
             position: relative;
             -webkit-touch-callout: none; /* Prevent callout to copy image, etc when tap to hold */
+            -webkit-user-select: none; /* Prevent text selection on mobile */
+            user-select: none;
         }
 
         #particles-canvas, #wave-canvas {
@@ -151,6 +154,8 @@
             position: relative;
             height: 100%;
             cursor: pointer;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .card:hover {
@@ -204,6 +209,7 @@
         .card-content {
             padding: 1.5rem;
             position: relative;
+            overflow: hidden;
         }
 
         .card-title {
@@ -213,16 +219,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            min-height: 40px;
         }
 
         .card-title-text {
             margin-right: auto;
+            display: flex;
+            align-items: center;
+            min-height: 40px;
         }
 
         .card-buttons {
             display: flex;
             gap: 8px;
             align-items: center;
+            justify-content: center;
         }
 
         .card-description {
@@ -303,7 +314,7 @@
 
         /* Demo button styles */
         .demo-btn {
-            display: inline-block;
+            display: inline-flex;
             background-color: var(--accent-color);
             color: var(--bg-color);
             padding: 6px 12px;
@@ -314,6 +325,9 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .demo-btn:hover {
@@ -323,7 +337,7 @@
         }
 
         .repo-btn {
-            display: inline-block;
+            display: inline-flex;
             background-color: rgba(0, 200, 255, 0.15);
             color: var(--accent-color);
             padding: 6px 12px;
@@ -334,6 +348,9 @@
             transition: all 0.3s ease;
             border: 1px solid var(--accent-color);
             cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .repo-btn:hover {
@@ -440,6 +457,18 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+        
+        /* Desktop-specific styles */
+        @media (min-width: 769px) {
+            .card-buttons {
+                justify-content: center;
+            }
+            
+            .demo-btn, .repo-btn {
+                min-width: 80px;
+                text-align: center;
+            }
+        }
 
         @media (max-width: 768px) {
             .container {
@@ -463,6 +492,39 @@
             .social-icons {
                 flex-wrap: wrap;
             }
+            
+            /* Disable card hover effects on mobile */
+            .card:hover {
+                transform: none;
+                box-shadow: var(--card-shadow);
+            }
+            
+            .card:hover .card-image img {
+                opacity: 1;
+            }
+            
+            .card:hover .card-video {
+                opacity: 0;
+            }
+            
+            /* Make cards more touch-friendly */
+            .card {
+                cursor: default;
+            }
+            
+            .card-buttons {
+                margin-top: 1rem;
+            }
+            
+            /* Better button spacing for touch */
+            .demo-btn, .repo-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+                min-height: 44px; /* iOS touch target size */
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -477,6 +539,41 @@
             .card-title {
                 font-size: 1.2rem;
             }
+            
+            /* Even better touch targets for small screens */
+            .card .mobile-code-btn {
+                width: 44px;
+                min-width: 44px;
+                height: 44px;
+            }
+            
+            .card .mobile-demo-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+            
+            /* Reduce padding for small screens */
+            .card-content {
+                padding: 1rem;
+            }
+            
+            .container {
+                padding: 0.5rem;
+            }
+            
+            /* Make sure buttons don't overflow */
+            .card-title-text {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                max-width: 100%;
+            }
+            
+            /* Adjust button spacing for small screens */
+            .card .mobile-buttons {
+                gap: 0.6rem;
+                padding: 0.8rem 1rem;
+            }
         }
 
         .card-buttons a,
@@ -485,6 +582,224 @@
             -webkit-tap-highlight-color: transparent; /* Explicitly remove for interactive elements */
             outline: none; /* Remove outline for buttons and links */
             user-select: none; /* Prevent text selection on buttons */
+            touch-action: manipulation; /* Prevent double-tap zoom on buttons */
+        }
+        
+        /* Better touch target sizes */
+        .demo-btn, .repo-btn {
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+        
+        /* Prevent accidental zooming on form elements */
+        input, textarea, select, button {
+            font-size: 16px;
+            touch-action: manipulation;
+        }
+        
+        /* Add tablet-specific styles */
+        @media (max-width: 1024px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .card-image {
+                height: 180px;
+            }
+            
+            /* Ensure buttons remain centered on tablet */
+            .card-buttons {
+                justify-content: center;
+            }
+        }
+        
+        /* Mobile-first improvements */
+        @media (max-width: 768px) {
+            /* Hide Pong game elements on mobile */
+            .pong-container {
+                display: none !important;
+            }
+            
+            /* Disable hover animations on mobile */
+            .card {
+                transition: none;
+                cursor: default;
+            }
+            
+            /* Better spacing for touch */
+            .card {
+                margin-bottom: 1rem;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            /* Improve readability */
+            .card-description {
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+            
+            /* Redesigned mobile card layout */
+            .card-content {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                padding: 1.2rem;
+                padding-bottom: 0; /* Remove bottom padding */
+            }
+            
+            /* Title section */
+            .card-title {
+                margin-bottom: 0.5rem;
+                justify-content: flex-start;
+            }
+            
+            .card-title-text {
+                font-size: 1.2rem;
+                margin-right: 0;
+            }
+            
+            /* Hide buttons from title area */
+            .card-buttons {
+                display: none;
+            }
+            
+            /* Description takes available space */
+            .card-description {
+                margin-bottom: 0.5rem;
+                flex: 1;
+            }
+            
+            /* New button section at bottom */
+            .card::after {
+                content: '';
+                display: flex;
+                gap: 0.8rem;
+                padding: 0 1.2rem 1.2rem;
+                background: linear-gradient(135deg, rgba(0, 200, 255, 0.1) 0%, rgba(255, 0, 170, 0.1) 100%);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            /* Create new mobile buttons */
+            .card {
+                position: relative;
+                padding-bottom: 0; /* Remove bottom padding to make room for buttons */
+            }
+            
+            .card .mobile-buttons {
+                position: relative;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                gap: 0.6rem;
+                padding: 0.8rem 1.2rem;
+                background: linear-gradient(135deg, rgba(0, 200, 255, 0.08) 0%, rgba(255, 0, 170, 0.08) 100%);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                align-items: stretch;
+            }
+            
+            /* Mobile code button - GitHub icon only */
+            .card .mobile-code-btn {
+                width: 44px;
+                min-width: 44px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: var(--text-primary);
+                padding: 0;
+                border-radius: 8px;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+                height: 44px;
+                position: relative;
+            }
+            
+            .card .mobile-code-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-1px);
+            }
+            
+            .card .mobile-code-btn::before {
+                content: '';
+                width: 20px;
+                height: 20px;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>') no-repeat center;
+                background-size: contain;
+                opacity: 0.9;
+            }
+            
+            /* Mobile demo button - Cool gradient style */
+            .card .mobile-demo-btn {
+                flex: 1;
+                background: linear-gradient(135deg, #00c8ff 0%, #0099cc 50%, #006699 100%);
+                border: none;
+                color: white;
+                padding: 0.8rem 1rem;
+                border-radius: 8px;
+                text-decoration: none;
+                font-size: 0.9rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                transition: all 0.3s ease;
+                min-height: 44px;
+                box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+                position: relative;
+                overflow: hidden;
+                min-width: 0; /* Allow flex shrinking */
+            }
+        
+        .card .mobile-demo-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .card .mobile-demo-btn:hover::before {
+            left: 100%;
+        }
+        
+        .card .mobile-demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 200, 255, 0.4);
+            background: linear-gradient(135deg, #00d9ff 0%, #00aadd 50%, #0077bb 100%);
+        }
+        
+        .card .mobile-demo-btn::after {
+            content: '▶';
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-left: 0.3rem;
+        }
+        
+        /* Ensure demo button text doesn't overflow */
+        .card .mobile-demo-btn {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
         }
     </style>
 </head>
@@ -953,6 +1268,36 @@
     </div>
 
     <script>
+        // Utility function to detect mobile devices
+        function isMobileDevice() {
+            return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) || 
+                   (window.innerWidth <= 768);
+        }
+        
+        // Disable Pong game on mobile devices
+        function shouldDisablePong() {
+            return isMobileDevice();
+        }
+        
+        // Initialize mobile detection and apply fixes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add mobile class to body if on mobile
+            if (isMobileDevice()) {
+                document.body.classList.add('mobile-device');
+                
+                // Disable Pong game completely on mobile
+                const pongContainer = document.getElementById('pong-container');
+                if (pongContainer) {
+                    pongContainer.style.display = 'none';
+                    pongContainer.style.pointerEvents = 'none';
+                }
+                
+                // Remove event listeners that could trigger Pong
+                document.removeEventListener('mousemove', window.pongMouseMoveHandler);
+                document.removeEventListener('touchmove', window.pongTouchMoveHandler);
+            }
+        });
+        
         // Console developer signature
         console.log('%c designed by @drbaph ', 'background: #121212; color: #00FF66; font-size: 16px; font-weight: bold; padding: 5px 10px; border-radius: 5px; border-left: 4px solid #00c8ff;');
         
@@ -1159,6 +1504,11 @@
         
         // Pong Game
         (function() {
+            // Check if Pong should be disabled on mobile
+            if (shouldDisablePong()) {
+                return; // Exit early if on mobile device
+            }
+            
             // Inactivity timer
             let inactivityTimer;
             let inactivityDelay = 25000; // 25 seconds
@@ -1821,7 +2171,7 @@
             }
             
             // Mouse movement to control right paddle
-            document.addEventListener('mousemove', (e) => {
+            const mouseMoveHandler = (e) => {
                 // Reset timer only if game hasn't started yet
                 if (!gameStarted) {
                     resetInactivityTimer();
@@ -1830,18 +2180,28 @@
                 if (pongActive) {
                     gameState.rightPaddleY = e.clientY - gameState.paddleHeight/2; // Center paddle on mouse
                 }
-            });
+            };
+            
+            // Store handler reference for removal
+            window.pongMouseMoveHandler = mouseMoveHandler;
+            document.addEventListener('mousemove', mouseMoveHandler);
             
             // Substantive interactions should reset timer and potentially stop game
-            const substantiveEvents = ['click', 'keydown', 'touchstart'];
+            const substantiveEvents = ['click', 'keydown'];
+            if (!shouldDisablePong()) {
+                substantiveEvents.push('touchstart');
+            }
+            
             substantiveEvents.forEach(event => {
-                document.addEventListener(event, () => {
+                const eventHandler = () => {
                     // Clicking anywhere once game has started will stop it
                     if (gameStarted) {
                         stopPong();
                     }
                     resetInactivityTimer();
-                });
+                };
+                
+                document.addEventListener(event, eventHandler);
             });
             
             // Handle window resize
@@ -1851,34 +2211,112 @@
                 }
             });
             
-            // Start inactivity timer
-            resetInactivityTimer();
+            // Only start inactivity timer if not on mobile
+            if (!shouldDisablePong()) {
+                resetInactivityTimer();
+            }
         })();
         
-        // Card video playback
+        // Card video playback with improved mobile handling
         document.querySelectorAll('.card').forEach(card => {
             const video = card.querySelector('.card-video');
             const demoLink = card.querySelector('.demo-btn').getAttribute('href');
+            const codeLink = card.querySelector('.repo-btn').getAttribute('href');
+            let touchStartTime = 0;
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let isScrolling = false;
+            
+            // Create mobile buttons if on mobile device
+            if (isMobileDevice()) {
+                // Create mobile button container
+                const mobileButtons = document.createElement('div');
+                mobileButtons.className = 'mobile-buttons';
+                
+                // Create mobile code button
+                const mobileCodeBtn = document.createElement('a');
+                mobileCodeBtn.className = 'mobile-code-btn';
+                mobileCodeBtn.href = codeLink;
+                mobileCodeBtn.target = '_blank';
+                mobileCodeBtn.setAttribute('aria-label', 'View code on GitHub');
+                mobileCodeBtn.title = 'View code on GitHub';
+                
+                // Create mobile demo button
+                const mobileDemoBtn = document.createElement('a');
+                mobileDemoBtn.className = 'mobile-demo-btn';
+                mobileDemoBtn.href = demoLink;
+                mobileDemoBtn.target = '_blank';
+                mobileDemoBtn.textContent = 'DEMO';
+                mobileDemoBtn.setAttribute('aria-label', 'View live demo');
+                mobileDemoBtn.title = 'View live demo';
+                
+                // Add buttons to container
+                mobileButtons.appendChild(mobileCodeBtn);
+                mobileButtons.appendChild(mobileDemoBtn);
+                
+                // Add mobile buttons to card
+                card.appendChild(mobileButtons);
+                
+                // Add touch event listeners for mobile buttons
+                mobileCodeBtn.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                });
+                
+                mobileDemoBtn.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                });
+            }
 
-            // Make entire card clickable
+            // Make entire card clickable with better mobile detection
             card.addEventListener('click', (e) => {
-                // Only navigate if not clicking on the buttons
-                if (!e.target.closest('.card-buttons')) {
+                // Only navigate if not clicking on the buttons and not on mobile
+                if (!e.target.closest('.card-buttons') && 
+                    !e.target.closest('.mobile-buttons') && 
+                    !isMobileDevice()) {
                     window.open(demoLink, '_blank');
                 }
             });
             
-            // Add touch event listeners for mobile
+            // Add touch event listeners for mobile with scroll detection
             card.addEventListener('touchstart', (e) => {
+                touchStartTime = Date.now();
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                isScrolling = false;
+                
                 // Play video on touch start
                 if (video && !video.playing) {
                     video.play();
                 }
             });
             
+            card.addEventListener('touchmove', (e) => {
+                // Detect if user is scrolling
+                const touchX = e.touches[0].clientX;
+                const touchY = e.touches[0].clientY;
+                const deltaX = Math.abs(touchX - touchStartX);
+                const deltaY = Math.abs(touchY - touchStartY);
+                
+                // If moved more than 10px, consider it scrolling
+                if (deltaX > 10 || deltaY > 10) {
+                    isScrolling = true;
+                }
+            });
+            
             card.addEventListener('touchend', (e) => {
-                // Only navigate if not touching the buttons
-                if (!e.target.closest('.card-buttons')) {
+                const touchEndTime = Date.now();
+                const touchDuration = touchEndTime - touchStartTime;
+                
+                // Only navigate if:
+                // 1. Not touching the buttons
+                // 2. Touch duration is short (tap, not scroll)
+                // 3. Not scrolling
+                // 4. On mobile device
+                if (!e.target.closest('.card-buttons') && 
+                    !e.target.closest('.mobile-buttons') &&
+                    touchDuration < 200 && 
+                    !isScrolling && 
+                    isMobileDevice()) {
                     // Prevent default to avoid double-triggering with click
                     e.preventDefault();
                     window.open(demoLink, '_blank');
@@ -1899,31 +2337,33 @@
             });
         });
         
-        // Add touch support for Pong game
-        document.addEventListener('touchmove', (e) => {
-            // Reset timer only if game hasn't started yet
-            if (!gameStarted) {
-                resetInactivityTimer();
-            }
-            
-            if (pongActive && e.touches.length > 0) {
-                // Get the first touch
-                const touch = e.touches[0];
-                // Control paddle with touch Y position
-                gameState.rightPaddleY = touch.clientY - gameState.paddleHeight/2;
+        // Add touch support for Pong game only on non-mobile devices
+        if (!isMobileDevice()) {
+            document.addEventListener('touchmove', (e) => {
+                // Reset timer only if game hasn't started yet
+                if (!gameStarted) {
+                    resetInactivityTimer();
+                }
                 
-                // Prevent scrolling while playing
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Add touch listeners for stopping game
-        document.addEventListener('touchstart', () => {
-            if (gameStarted) {
-                stopPong();
-            }
-            resetInactivityTimer();
-        });
+                if (pongActive && e.touches.length > 0) {
+                    // Get the first touch
+                    const touch = e.touches[0];
+                    // Control paddle with touch Y position
+                    gameState.rightPaddleY = touch.clientY - gameState.paddleHeight/2;
+                    
+                    // Prevent scrolling while playing
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Add touch listeners for stopping game
+            document.addEventListener('touchstart', () => {
+                if (gameStarted) {
+                    stopPong();
+                }
+                resetInactivityTimer();
+            });
+        }
     </script>
 </body>
 </html>
